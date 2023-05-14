@@ -2,6 +2,7 @@ import cvxopt as cv
 import cvxpy as cp
 import numpy as np
 
+from algorithms import branch_and_bound
 from problems import BinaryIntegerProblem
 
 # Original BIP
@@ -19,8 +20,14 @@ constraints = [6 * x1 + 3 * x2 + 5 * x3 + 2 * x4 <= 10,
 
 bip = BinaryIntegerProblem(obj, constraints)
 
-# ~ Branch ~ #
+# cvxpy
+bip.solve()
+print('status: ', bip.status)
+print('optimal value: ', bip.value)
+print('optimal solution: ', [v.value[0] for v in bip.variables()])
 
-# Subprob 1 (x1 = 0)
-sub1 = BinaryIntegerProblem(obj, constraints + [x1 <= 0])
-result1 = sub1.solve_lp_relaxation()
+# my naive implementation
+result = branch_and_bound(bip)
+print('status: ', result.get('status'))
+print('optimal value: ', result.get('optimal_value'))
+print('optimal solution: ', result.get('optimal_solution'))

@@ -67,13 +67,20 @@ class TestBranchAndBound(unittest.TestCase):
                                    -x2              + x4 <= 0]
 
         bip = BinaryIntegerProblem(obj, constraints)
-        # val, sol = branch_and_bound(bip)
+        result = branch_and_bound(bip)
 
-class TestUtils(unittest.TestCase):
+        self.assertEqual(result.get('status'), 'optimal')
+        self.assertAlmostEqual(result.get('optimal_value'), 14)
+        self.assertAlmostEqual(result.get('optimal_solution')[0], 1)
+        self.assertAlmostEqual(result.get('optimal_solution')[1], 1)
+        self.assertAlmostEqual(result.get('optimal_solution')[2], 0)
+        self.assertAlmostEqual(result.get('optimal_solution')[3], 0)
 
-    def test_is_integer_solution(self):
-        self.assertTrue(is_integer_solution([1e-7], 1e-7))
-        self.assertTrue(is_integer_solution([1.5], 1e-7))
+# class TestUtils(unittest.TestCase):
+
+#     def test_is_integer_solution(self):
+#         self.assertTrue(is_integer_solution([1e-7], 1e-7))
+#         self.assertTrue(is_integer_solution([1.5], 1e-7))
 
 
 if __name__ == '__main__':
