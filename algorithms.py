@@ -6,7 +6,7 @@ from problems import BinaryIntegerProblem
 from utils import is_integer_solution
 
 z_star = -np.inf
-tolerance = 0.00000001
+tolerance = 1e-7
 
 def branch_and_bound(bip: BinaryIntegerProblem):
     result = bip.solve_lp_relaxation()

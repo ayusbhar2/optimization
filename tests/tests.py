@@ -5,8 +5,9 @@ import numpy as np
 import logging
 import unittest
 
-from problems import BinaryIntegerProblem
 from algorithms import branch_and_bound
+from problems import BinaryIntegerProblem
+from utils import is_integer_solution
 
 
 class TestBinaryIntegerProblem(unittest.TestCase):
@@ -67,6 +68,12 @@ class TestBranchAndBound(unittest.TestCase):
 
         bip = BinaryIntegerProblem(obj, constraints)
         # val, sol = branch_and_bound(bip)
+
+class TestUtils(unittest.TestCase):
+
+    def test_is_integer_solution(self):
+        self.assertTrue(is_integer_solution([1e-7], 1e-7))
+        self.assertTrue(is_integer_solution([1.5], 1e-7))
 
 
 if __name__ == '__main__':
