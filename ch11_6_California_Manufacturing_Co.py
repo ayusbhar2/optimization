@@ -2,7 +2,7 @@ import cvxopt as cv
 import cvxpy as cp
 import numpy as np
 
-from utils import get_lp_relaxation_of_bip
+from problems import BinaryIntegerProblem
 
 # Original BIP
 x1 = cp.Variable(1, boolean=True, name='x1')
@@ -17,26 +17,27 @@ constraints = [6 * x1 + 3 * x2 + 5 * x3 + 2 * x4 <= 10,
                   -x1          + x3              <= 0,
                            -x2              + x4 <= 0]
 
-bip = cp.Problem(obj, constraints)
+bip = BinaryIntegerProblem(obj, constraints)
 
 # ~ Branch ~ #
 
 # Subprob 1 (x1 = 0)
-sub1 = cp.Problem(obj, constraints + [x1 <= 0])
-lp1 = get_lp_relaxation_of_bip(sub1)
-lp1.solve()
-print('solving lp1...')
-print('status: {}'.format(lp1.status))
-print('optimal value: {}'.format(lp1.value))
-print('optimal solution: {}'.format(
-    [v.value[0]for v in lp1.variables()]))
+sub1 = BinaryIntegerProblem(obj, constraints + [x1 <= 0])
+result1 = sub1.solve_lp_relaxation()
 
-# Subprob 2 (x1 = 1)
-sub2 = cp.Problem(obj, constraints + [x1 >= 1])
-lp2 = get_lp_relaxation_of_bip(sub2)
-lp2.solve()
-print('solving lp2...')
-print('status: {}'.format(lp2.status))
-print('optimal value: {}'.format(lp2.value))
-print('optimal solution: {}'.format(
-    [v.value[0]for v in lp2.variables()]))
+# lp1.solve()
+# print('solving lp1...')
+# print('status: {}'.format(lp1.status))
+# print('optimal value: {}'.format(lp1.value))
+# print('optimal solution: {}'.format(
+#     [v.value[0]for v in lp1.variables()]))
+
+# # Subprob 2 (x1 = 1)
+# sub2 = cp.Problem(obj, constraints + [x1 >= 1])
+# lp2 = get_lp_relaxation_of_bip(sub2)
+# lp2.solve()
+# print('solving lp2...')
+# print('status: {}'.format(lp2.status))
+# print('optimal value: {}'.format(lp2.value))
+# print('optimal solution: {}'.format(
+#     [v.value[0]for v in lp2.variables()]))
