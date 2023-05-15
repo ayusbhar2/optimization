@@ -30,13 +30,13 @@ def branch_and_bound(bip: BinaryIntegerProblem, var_index=0):
         result.update(
             {'status': lp_status,
              'optimal_value': lp_value,
-             'optimal_solution': lp_solution,})
+             'optimal_solution': [int(x) for x in lp_solution],})
 
     elif var_index >= len(bip.variables()): # fathom: reached a leaf node
         result.update(
             {'status': 'optimal',
              'optimal_value': bip.objective.value,
-             'optimal_solution': [v.value[0] for v in bip.variables()],})
+             'optimal_solution': [int(v.value[0]) for v in bip.variables()],})
     else:
         # Branch
         # cvxpy does not guarantee sorting of variables

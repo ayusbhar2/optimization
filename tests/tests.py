@@ -71,16 +71,16 @@ class TestBranchAndBound(unittest.TestCase):
 
         self.assertEqual(result.get('status'), 'optimal')
         self.assertAlmostEqual(result.get('optimal_value'), 14)
-        self.assertAlmostEqual(result.get('optimal_solution')[0], 1)
-        self.assertAlmostEqual(result.get('optimal_solution')[1], 1)
-        self.assertAlmostEqual(result.get('optimal_solution')[2], 0)
-        self.assertAlmostEqual(result.get('optimal_solution')[3], 0)
+        self.assertEqual(result.get('optimal_solution')[0], 1)
+        self.assertEqual(result.get('optimal_solution')[1], 1)
+        self.assertEqual(result.get('optimal_solution')[2], 0)
+        self.assertEqual(result.get('optimal_solution')[3], 0)
 
-# class TestUtils(unittest.TestCase):
+class TestUtils(unittest.TestCase):
 
-#     def test_is_integer_solution(self):
-#         self.assertTrue(is_integer_solution([1e-7], 1e-7))
-#         self.assertTrue(is_integer_solution([1.5], 1e-7))
+    def test_is_integer_solution(self):
+        self.assertTrue(is_integer_solution([1e-7], 1e-7))
+        self.assertFalse(is_integer_solution([1.5], 1e-7))
 
 
 if __name__ == '__main__':
