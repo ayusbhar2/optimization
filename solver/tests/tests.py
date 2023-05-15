@@ -5,9 +5,9 @@ import numpy as np
 import logging
 import unittest
 
-from algorithms import branch_and_bound
-from problems import BinaryIntegerProblem
-from utils import is_integer_solution
+from solver.algorithms import branch_and_bound
+from solver.classes import BinaryIntegerProblem
+from solver.utils import is_integer_solution
 
 
 class TestBinaryIntegerProblem(unittest.TestCase):
