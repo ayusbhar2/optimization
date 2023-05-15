@@ -2,8 +2,8 @@ import cvxopt as cv
 import cvxpy as cp
 import numpy as np
 
-from problems import BinaryIntegerProblem
-from utils import is_integer_solution
+from solver.classes import BinaryIntegerProblem
+from solver.utils import is_integer_solution
 
 z_star = -np.inf
 var_index = 0
