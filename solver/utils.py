@@ -26,3 +26,9 @@ def prettify(d: dict):
         value.append(v)
     df = pd.DataFrame({'variable': variable, 'value': value})
     return df
+
+def check_violation(constraints: list):
+    for c in constraints:
+        if not c.value():
+            return c
+    return None
