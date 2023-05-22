@@ -2,14 +2,25 @@ import cvxopt as cv
 import cvxpy as cp
 import numpy as np
 
+from abc import ABC, abstractmethod
 
-class NetworkProblem():
 
-    pass
+class NetworkProblem(ABC):
+    @abstractmethod
+    def solve(self):
+        pass
+
+class TransportationProblem(NetworkProblem):
+    def solve():
+        pass
+
+class AssignmentProblem(NetworkProblem):
+    def solve():
+        pass
 
 class MaxFlowProblem(NetworkProblem):
-
-    pass
+    def solve():
+        pass
 
 class IntegerProblem(cp.problems.problem.Problem):
 
@@ -25,7 +36,7 @@ class MixedIntegerProblem(IntegerProblem):
             self, objective, constraints)
 
 class BinaryIntegerProblem(IntegerProblem):
-    
+
     def __init__(self, objective, constraints):
         for var in objective.variables():
             if not var.attributes['boolean']:

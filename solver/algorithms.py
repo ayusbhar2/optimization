@@ -2,7 +2,7 @@ import cvxopt as cv
 import cvxpy as cp
 import numpy as np
 
-from solver.classes import BinaryIntegerProblem
+from solver.classes import AssignmentProblem, BinaryIntegerProblem, TransportationProblem
 from solver.utils import is_integer_solution
 
 z_star = -np.inf
@@ -10,6 +10,12 @@ var_index = 0
 tolerance = 1e-7
 
 def simplex_2D(objective, constraints):
+    pass
+
+def transportation_simplex(prob: TransportationProblem):
+    pass
+
+def hungarian_method(prob: AssignmentProblem):
     pass
 
 # TODO: write mixed integer version of algo.
