@@ -2,6 +2,13 @@ import cvxopt as cv
 import cvxpy as cp
 import numpy as np
 
+
+class NetworkProblem():
+    pass
+
+class MaxFlowProblem(NetworkProblem):
+    pass
+
 class BinaryIntegerProblem(cp.problems.problem.Problem):
 
     def __init__(self, objective, constraints):
@@ -40,3 +47,4 @@ class BinaryIntegerProblem(cp.problems.problem.Problem):
             var.attributes['boolean'] = True
 
         return result
+
