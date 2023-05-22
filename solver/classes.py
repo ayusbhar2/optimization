@@ -4,13 +4,28 @@ import numpy as np
 
 
 class NetworkProblem():
+
     pass
 
 class MaxFlowProblem(NetworkProblem):
+
     pass
 
-class BinaryIntegerProblem(cp.problems.problem.Problem):
+class IntegerProblem(cp.problems.problem.Problem):
 
+    def __init__(self, objective, constraints):
+        # TODO: check that at least one of the variables is integer
+        cp.problems.problem.Problem.__init__(
+            self, objective, constraints)
+
+class MixedIntegerProblem(IntegerProblem):
+
+    def __init__(self, objective, constraints):
+        IntegerProblem.__init__(
+            self, objective, constraints)
+
+class BinaryIntegerProblem(IntegerProblem):
+    
     def __init__(self, objective, constraints):
         for var in objective.variables():
             if not var.attributes['boolean']:
@@ -18,7 +33,7 @@ class BinaryIntegerProblem(cp.problems.problem.Problem):
                     'All variables must have boolean attribute True for '
                     'Binary Integer Programming Problems')
 
-        cp.problems.problem.Problem.__init__(
+        IntegerProblem.__init__(
             self, objective, constraints)
 
     def solve_lp_relaxation(self):
@@ -47,4 +62,3 @@ class BinaryIntegerProblem(cp.problems.problem.Problem):
             var.attributes['boolean'] = True
 
         return result
-

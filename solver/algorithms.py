@@ -9,6 +9,9 @@ z_star = -np.inf
 var_index = 0
 tolerance = 1e-7
 
+def simplex_2D(objective, constraints):
+    pass
+
 def branch_and_bound(bip: BinaryIntegerProblem, var_index=0):
     # Bound
     lp_result = bip.solve_lp_relaxation()
