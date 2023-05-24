@@ -12,6 +12,10 @@ tolerance = 1e-7
 def simplex_2D(objective, constraints):
     pass
 
+def dijkstra(G: AdjacencyList, source, destination):
+    """Returns shortest path from source to destination in a graph."""
+    pass
+
 def transportation_simplex(prob: TransportationProblem):
     pass
 

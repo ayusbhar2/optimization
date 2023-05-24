@@ -4,6 +4,11 @@ import numpy as np
 
 from abc import ABC, abstractmethod
 
+class Graph(ABC):
+    pass
+
+class AdjacencyList(Graph):
+    pass
 
 class NetworkProblem(ABC):
     @abstractmethod
