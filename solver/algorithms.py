@@ -2,7 +2,8 @@ import cvxopt as cv
 import cvxpy as cp
 import numpy as np
 
-from solver.classes import AssignmentProblem, BinaryIntegerProblem, TransportationProblem
+from solver.classes import AssignmentProblem, BinaryIntegerProblem, Graph
+from solver.classes import TransportationProblem
 from solver.utils import is_integer_solution
 
 z_star = -np.inf
@@ -12,9 +13,20 @@ tolerance = 1e-7
 def simplex_2D(objective, constraints):
     pass
 
-def dijkstra(G: AdjacencyList, source, destination):
-    """Returns shortest path from source to destination in a graph."""
-    pass
+def dijkstra(graph: Graph, s):
+    """Returns shortest path from source to every node in a graph."""
+    dists = {s: 0} # {node: shortest diestance from source}
+    while len(dists) < len(graph):
+        candidates = []
+        for edge, cost in graph.edge_costs.items():
+            if edge[0] in dists and edge[1] not in dists: # crosses frontier
+                candidates.append((edge, dists[edge[0]] + cost))
+            else:
+                continue
+        u_v, dist_v  = sorted(candidates, key=lambda x: x[1])[0] # choose best candidate
+        dists.update({u_v[1]: dist_v})
+
+    return dists
 
 def transportation_simplex(prob: TransportationProblem):
     pass

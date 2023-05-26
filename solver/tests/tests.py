@@ -5,8 +5,8 @@ import numpy as np
 import logging
 import unittest
 
-from solver.algorithms import branch_and_bound
-from solver.classes import BinaryIntegerProblem
+from solver.algorithms import branch_and_bound, dijkstra
+from solver.classes import BinaryIntegerProblem, Graph
 from solver.utils import is_integer_solution
 
 
@@ -81,6 +81,39 @@ class TestUtils(unittest.TestCase):
     def test_is_integer_solution(self):
         self.assertTrue(is_integer_solution([1e-7], 1e-7))
         self.assertFalse(is_integer_solution([1.5], 1e-7))
+
+class TestGraph(unittest.TestCase):
+
+    def test_init_(self):
+        g = {0: {1: 1, 2: 2, 3: 3},
+             1: {2: 4, 3: 5},
+             2: {0: 6},
+             3: {2: 7}}
+
+        graph = Graph(g)
+        self.assertEqual(graph[0][1], 1)
+        self.assertEqual(graph[0][2], 2)
+        self.assertEqual(graph[0][3], 3)
+
+        self.assertEqual(graph.edge_costs[(0, 1)], 1)
+        self.assertEqual(graph.edge_costs[(3, 2)], 7)
+
+class TestDijkstra(unittest.TestCase):
+    def test_dijkstra(self):
+        # Seervada Park network
+        g = {'O': {'A': 2, 'B': 5, 'C': 4},
+             'A': {'O': 2, 'B': 2, 'D': 7},
+             'B': {'O': 5, 'A': 2, 'C': 1, 'D': 4, 'E': 3},
+             'C': {'O': 4, 'B': 1, 'E': 4},
+             'D': {'A': 7, 'B': 4, 'E': 1, 'T': 5},
+             'E': {'B': 3, 'C': 4, 'D': 1, 'T': 7},
+             'T':{'D': 5, 'E': 7},}
+
+        graph = Graph(g)
+        result = dijkstra(graph, 'O')
+        self.assertEqual(result['T'], 13)
+        # self.assertEqual(result['t'][1], 'OABDT')
+
 
 
 if __name__ == '__main__':
