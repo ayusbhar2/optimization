@@ -85,18 +85,24 @@ class TestUtils(unittest.TestCase):
 class TestGraph(unittest.TestCase):
 
     def test_init_(self):
-        g = {0: {1: 1, 2: 2, 3: 3},
-             1: {2: 4, 3: 5},
-             2: {0: 6},
-             3: {2: 7}}
+        edges_to_costs_map = {
+            (0, 1): 1,
+            (0, 2): 2,
+            (0, 3): 3,
+            (1, 2): 4,
+            (1, 3): 5,
+            (2, 0): 6,
+            (3, 2): 7,
+        }
+        graph = Graph(edges_to_costs_map)
+        self.assertEqual(graph[(0, 1)], 1)
+        self.assertEqual(graph[(0, 2)], 2)
+        self.assertEqual(graph[(0, 3)], 3)
 
-        graph = Graph(g)
-        self.assertEqual(graph[0][1], 1)
-        self.assertEqual(graph[0][2], 2)
-        self.assertEqual(graph[0][3], 3)
+        self.assertEqual(graph[(0, 1)], 1)
+        self.assertEqual(graph[(3, 2)], 7)
 
-        self.assertEqual(graph.edge_costs[(0, 1)], 1)
-        self.assertEqual(graph.edge_costs[(3, 2)], 7)
+        self.assertEqual(graph.vertices, {0, 1, 2, 3})
 
 class TestDijkstra(unittest.TestCase):
 
@@ -127,15 +133,45 @@ class TestDijkstra(unittest.TestCase):
 
     def test_get_shortest_paths_with_target(self):
         # Seervada Park network
-        g = {'O': {'A': 2, 'B': 5, 'C': 4},
-             'A': {'O': 2, 'B': 2, 'D': 7},
-             'B': {'O': 5, 'A': 2, 'C': 1, 'D': 4, 'E': 3},
-             'C': {'O': 4, 'B': 1, 'E': 4},
-             'D': {'A': 7, 'B': 4, 'E': 1, 'T': 5},
-             'E': {'B': 3, 'C': 4, 'D': 1, 'T': 7},
-             'T':{'D': 5, 'E': 7},}
+        # g = {'O': {'A': 2, 'B': 5, 'C': 4},
+        #      'A': {'O': 2, 'B': 2, 'D': 7},
+        #      'B': {'O': 5, 'A': 2, 'C': 1, 'D': 4, 'E': 3},
+        #      'C': {'O': 4, 'B': 1, 'E': 4},
+        #      'D': {'A': 7, 'B': 4, 'E': 1, 'T': 5},
+        #      'E': {'B': 3, 'C': 4, 'D': 1, 'T': 7},
+        #      'T':{'D': 5, 'E': 7},}
 
-        graph = Graph(g)
+        edges_to_costs_map = {
+            ('O', 'A'): 2,
+            ('O', 'B'): 5,
+            ('O', 'C'): 4,
+            ('A', 'O'): 2,
+            ('A', 'B'): 2,
+            ('A', 'D'): 7,
+            ('B', 'O'): 5,
+            ('B', 'O'): 5,
+            ('B', 'A'): 2,
+            ('B', 'C'): 1,
+            ('B', 'D'): 4,
+            ('B', 'E'): 3,
+            ('B', 'O'): 5,
+            ('C', 'O'): 4,
+            ('C', 'B'): 1,
+            ('C', 'E'): 4,
+            ('D', 'A'): 7,
+            ('D', 'B'): 4,
+            ('D', 'E'): 1,
+            ('D', 'T'): 5,
+            ('D', 'A'): 7,
+            ('E', 'B'): 3,
+            ('E', 'C'): 4,
+            ('E', 'D'): 1,
+            ('E', 'T'): 7,
+            ('T', 'D'): 5,
+            ('T', 'E'): 7,
+        }
+
+        graph = Graph(edges_to_costs_map)
 
         # with target
         result = get_shortest_paths(graph, 'O', target='T', algorithm='dijkstra')
@@ -164,8 +200,6 @@ class TestDijkstra(unittest.TestCase):
         self.assertEqual(result[1]['E'], 'B')
         self.assertEqual(result[1]['T'], 'D')
         
-
-
 
 if __name__ == '__main__':
 

@@ -22,20 +22,26 @@ def simplex_2D(objective, constraints):
     pass
 
 def get_shortest_paths(graph: Graph, source: str, target=None, algorithm='dijkstra'):
-    """Returns shortest paths from source to every node in a graph."""
+    """Returns shortest paths from source to every node in an undirected graph.
+    
+    Optionally, if a `target` is provided, only the shortest path to the target
+    is returned.
+    """
 
     dists = {source: 0} # maps each node to its shortest distance from source
     previous_nodes = {source: None} # node preceding the current node in shortest path
 
-    while len(dists) < len(graph):
+    i = 1
+    while len(dists) < len(graph.vertices):
         candidates = []
-        for edge, cost in graph.edge_costs.items():
+        for edge, cost in graph.items():
             if (edge[0] in dists and edge[1] not in dists): # edge crosses frontier
                 candidates.append((edge, dists[edge[0]] + cost))
             else:
                 continue
 
         sorted_candidates = sorted(candidates, key=lambda x: x[1]) # sort by cost
+
 
         n = len(sorted_candidates)
         if n == 0:
@@ -49,6 +55,7 @@ def get_shortest_paths(graph: Graph, source: str, target=None, algorithm='dijkst
         for edge, dist in best_candidates:
             dists.update({edge[1]: dist})
             previous_nodes.update({edge[1]: edge[0]})
+        i += 1
 
     if target: # a target node was provided
         shortest_path = _extract_path(previous_nodes, target)

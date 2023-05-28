@@ -7,13 +7,14 @@ from abc import ABC, abstractmethod
 
 class Graph(dict):
     # TODO: add check for appropriate dict structure
-    def __init__(self, d: dict):
-        dict.__init__(self, d)
-        # self.dict = d
-        self.edge_costs = {}
-        for v, nodes in self.items():
-            for w, cost in nodes.items():
-                self.edge_costs.update({(v, w): cost})
+    def __init__(self, edges_to_costs_map: dict):
+        dict.__init__(self, edges_to_costs_map)
+
+        self.vertices = set()
+        if self.items(): # non-empty graph
+            for edge, cost in self.items():
+                self.vertices.add(edge[0])
+                self.vertices.add(edge[1])
 
 class NetworkProblem(ABC):
     @abstractmethod
