@@ -5,7 +5,7 @@ import numpy as np
 import logging
 import unittest
 
-from solver.algorithms import branch_and_bound, dijkstra
+from solver.algorithms import branch_and_bound, get_shortest_paths, _extract_path
 from solver.classes import BinaryIntegerProblem, Graph
 from solver.utils import is_integer_solution
 
@@ -99,7 +99,33 @@ class TestGraph(unittest.TestCase):
         self.assertEqual(graph.edge_costs[(3, 2)], 7)
 
 class TestDijkstra(unittest.TestCase):
-    def test_dijkstra(self):
+
+    def test_extract_path(self):
+        previous_nodes = {
+            'O': None,
+            'A': 'O',
+            'B': 'A',
+            'C': 'O',
+            'E': 'B',
+            'D': 'B',
+            'T': 'D',
+        }
+        result = _extract_path(previous_nodes, 'O')
+        self.assertEqual(result, 'O')
+        result = _extract_path(previous_nodes, 'A')
+        self.assertEqual(result, 'OA')
+        result = _extract_path(previous_nodes, 'B')
+        self.assertEqual(result, 'OAB')
+        result = _extract_path(previous_nodes, 'C')
+        self.assertEqual(result, 'OC')
+        result = _extract_path(previous_nodes, 'D')
+        self.assertEqual(result, 'OABD')
+        result = _extract_path(previous_nodes, 'E')
+        self.assertEqual(result, 'OABE')
+        result = _extract_path(previous_nodes, 'T')
+        self.assertEqual(result, 'OABDT')
+
+    def test_get_shortest_paths_with_target(self):
         # Seervada Park network
         g = {'O': {'A': 2, 'B': 5, 'C': 4},
              'A': {'O': 2, 'B': 2, 'D': 7},
@@ -110,9 +136,34 @@ class TestDijkstra(unittest.TestCase):
              'T':{'D': 5, 'E': 7},}
 
         graph = Graph(g)
-        result = dijkstra(graph, 'O')
-        self.assertEqual(result['T'], 13)
-        # self.assertEqual(result['t'][1], 'OABDT')
+
+        # with target
+        result = get_shortest_paths(graph, 'O', target='T', algorithm='dijkstra')
+        self.assertEqual(result[0], 13)
+        self.assertEqual(result[1], 'OABEDT')
+
+        result = get_shortest_paths(graph, 'O', target='C', algorithm='dijkstra')
+        self.assertEqual(result[0], 4)
+        self.assertEqual(result[1], 'OC')
+
+        # without target
+        result = get_shortest_paths(graph, 'O', target=None, algorithm='dijkstra')
+        self.assertEqual(result[0]['O'], 0)
+        self.assertEqual(result[0]['A'], 2)
+        self.assertEqual(result[0]['B'], 4)
+        self.assertEqual(result[0]['C'], 4)
+        self.assertEqual(result[0]['D'], 8)
+        self.assertEqual(result[0]['E'], 7)
+        self.assertEqual(result[0]['T'], 13)
+
+        self.assertEqual(result[1]['O'], None)
+        self.assertEqual(result[1]['A'], 'O')
+        self.assertEqual(result[1]['B'], 'A')
+        self.assertEqual(result[1]['C'], 'O')
+        self.assertEqual(result[1]['D'], 'E')
+        self.assertEqual(result[1]['E'], 'B')
+        self.assertEqual(result[1]['T'], 'D')
+        
 
 
 

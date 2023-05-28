@@ -10,23 +10,53 @@ z_star = -np.inf
 var_index = 0
 tolerance = 1e-7
 
+def _extract_path(previous_nodes, target_node, path=''):
+    path = target_node + path
+    if not previous_nodes[target_node]:
+        return path
+    else:
+        u = previous_nodes[target_node]
+        return _extract_path(previous_nodes, u, path=path)
+
 def simplex_2D(objective, constraints):
     pass
 
-def dijkstra(graph: Graph, s):
-    """Returns shortest path from source to every node in a graph."""
-    dists = {s: 0} # {node: shortest diestance from source}
+def get_shortest_paths(graph: Graph, source: str, target=None, algorithm='dijkstra'):
+    """Returns shortest paths from source to every node in a graph."""
+
+    dists = {source: 0} # maps each node to its shortest distance from source
+    previous_nodes = {source: None} # node preceding the current node in shortest path
+
     while len(dists) < len(graph):
         candidates = []
         for edge, cost in graph.edge_costs.items():
-            if edge[0] in dists and edge[1] not in dists: # crosses frontier
+            if (edge[0] in dists and edge[1] not in dists): # edge crosses frontier
                 candidates.append((edge, dists[edge[0]] + cost))
             else:
                 continue
-        u_v, dist_v  = sorted(candidates, key=lambda x: x[1])[0] # choose best candidate
-        dists.update({u_v[1]: dist_v})
 
-    return dists
+        sorted_candidates = sorted(candidates, key=lambda x: x[1]) # sort by cost
+
+        n = len(sorted_candidates)
+        if n == 0:
+            raise ValueError('No more edges to explore!')
+        else:
+            best_candidates = [sorted_candidates[0]]
+            j = 0
+            while (j + 1 < n and sorted_candidates[j][1] == sorted_candidates[j + 1][1]):
+                best_candidates.append(sorted_candidates[j + 1])
+                j += 1
+        for edge, dist in best_candidates:
+            dists.update({edge[1]: dist})
+            previous_nodes.update({edge[1]: edge[0]})
+
+    if target: # a target node was provided
+        shortest_path = _extract_path(previous_nodes, target)
+        shortest_distance = dists[target]
+        return shortest_distance, shortest_path
+
+    else:
+        return dists, previous_nodes
 
 def transportation_simplex(prob: TransportationProblem):
     pass
