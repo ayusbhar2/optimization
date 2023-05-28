@@ -26,6 +26,9 @@ class Edge():
     def __hash__(self):
         return hash(repr(self))
 
+    def update(self, **kwargs):
+        self.__dict__.update(kwargs)
+
 class Graph():
     def __init__(self, edge_list=[]):
         self.edges = set()
@@ -47,6 +50,13 @@ class Graph():
         for edge in self.edges:
             if edge.source == source and edge.target == target:
                 return edge
+        raise KeyError('The requested edge does not exist!')
+
+    def update_edge(self, source, target, **kwargs):
+        for edge in self.edges:
+            if edge.source == source and edge.target == target:
+                edge.update(**kwargs)
+                return
         raise KeyError('The requested edge does not exist!')
 
 class NetworkProblem(ABC):

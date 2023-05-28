@@ -2,6 +2,8 @@ import cvxopt as cv
 import cvxpy as cp
 import numpy as np
 
+import logging
+
 from solver.classes import AssignmentProblem, BinaryIntegerProblem, Graph
 from solver.classes import TransportationProblem
 from solver.utils import is_integer_solution
@@ -9,6 +11,8 @@ from solver.utils import is_integer_solution
 z_star = -np.inf
 var_index = 0
 tolerance = 1e-7
+
+logging.basicConfig(level=logging.INFO)
 
 def _extract_path(previous_nodes, target_node, path=''):
     path = target_node + path
@@ -21,51 +25,64 @@ def _extract_path(previous_nodes, target_node, path=''):
 def simplex_2D(objective, constraints):
     pass
 
-def get_shortest_paths(graph: Graph, source: str, target=None, algorithm='dijkstra'):
-    """Returns shortest paths from source to every node in an undirected graph.
-    
-    Optionally, if a `target` is provided, only the shortest path to the target
-    is returned.
-    """
+def get_shortest_path(graph: Graph, source: str, target: None, algorithm='dijkstra'):
+    """Get shortest path from source to target in a connected, undirected graph."""
+    logging.info(
+        'Starting the shortest path algorithm with source: {}'.format(source))
+    try:
+        dists = {source: 0} # maps each node to its shortest distance from source
+        previous_nodes = {source: None} # node preceding the current node in shortest path
 
-    dists = {source: 0} # maps each node to its shortest distance from source
-    previous_nodes = {source: None} # node preceding the current node in shortest path
+        i = 1
+        while len(dists) < len(graph.vertices):
+            logging.info('Iteration {}'.format(i))
 
-    while len(dists) < len(graph.vertices):
-        candidates = []
-        for edge in graph.edges:
-            if (edge.source in dists and
-                edge.target not in dists): # edge crosses frontier
-                dist = dists[edge.source] + edge.cost
-                candidates.append((edge, dist))
+            candidates = []
+            for edge in graph.edges:
+                if (edge.source in dists and
+                    edge.target not in dists): # edge crosses frontier
+                    dist = dists[edge.source] + edge.cost
+                    candidates.append((edge, dist))
+                else:
+                    continue
+
+            sorted_candidates = sorted(candidates, key=lambda x: x[1]) # sort by cost
+            logging.debug('Candidate edges: {}'.format(sorted_candidates))
+
+            n = len(sorted_candidates)
+            if n > 0:
+                best_candidates = [sorted_candidates[0]]
+                j = 0
+                while (j + 1 < n and
+                    sorted_candidates[j][1] == sorted_candidates[j + 1][1]):
+                    best_candidates.append(sorted_candidates[j + 1])
+                    j += 1
             else:
-                continue
+                logging.info('No more edges to explore!')
+                break
 
-        sorted_candidates = sorted(candidates, key=lambda x: x[1]) # sort by cost
+            for edge, dist in best_candidates:
+                dists.update({edge.target: dist})
+                # TODO: improve tie breaking
+                previous_nodes.update({edge.target: edge.source})
+                logging.info('Edge selected: {}-->{} ({})'.format(
+                    edge.source, edge.target, dist))
 
-        n = len(sorted_candidates)
-        if n == 0:
-            raise ValueError('No more edges to explore!')
+            logging.debug('len(dists): {}, len(graph.vertices): {}'.format(
+                len(dists), len(graph.vertices)))
+
+            i += 1
+
+        if target: # a target node was provided
+            shortest_path = _extract_path(previous_nodes, target)
+            shortest_distance = dists[target]
+            return shortest_distance, shortest_path
+
         else:
-            best_candidates = [sorted_candidates[0]]
-            j = 0
-            while (j + 1 < n and
-                sorted_candidates[j][1] == sorted_candidates[j + 1][1]):
-                best_candidates.append(sorted_candidates[j + 1])
-                j += 1
+            return dists, previous_nodes
 
-        for edge, dist in best_candidates:
-            dists.update({edge.target: dist})
-            # TODO: improve tie breaking
-            previous_nodes.update({edge.target: edge.source})
-
-    if target: # a target node was provided
-        shortest_path = _extract_path(previous_nodes, target)
-        shortest_distance = dists[target]
-        return shortest_distance, shortest_path
-
-    else:
-        return dists, previous_nodes
+    except ValueError as e:
+        logging.error(e)
 
 def transportation_simplex(prob: TransportationProblem):
     pass
