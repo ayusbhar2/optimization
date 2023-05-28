@@ -4,17 +4,51 @@ import numpy as np
 
 from abc import ABC, abstractmethod
 
+class Edge():
+    def __init__(self, source, target, **kwargs):
+        self.source = source
+        self.target = target
+        for k, v in kwargs.items():
+            self.__dict__[k] = v
 
-class Graph(dict):
-    # TODO: add check for appropriate dict structure
-    def __init__(self, edges_to_costs_map: dict):
-        dict.__init__(self, edges_to_costs_map)
+    def __eq__(self, other):
+        if (self.source == other.source and self.target == other.target):
+            return True
+        else:
+            return False
 
+    def __str__(self):
+        return 'Edge: {}->{}'.format(self.source, self.target)
+
+    def __repr__(self):
+        return 'Edge: {}->{}'.format(self.source, self.target)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+class Graph():
+    def __init__(self, edge_list=[]):
+        self.edges = set()
         self.vertices = set()
-        if self.items(): # non-empty graph
-            for edge, cost in self.items():
-                self.vertices.add(edge[0])
-                self.vertices.add(edge[1])
+        if edge_list:
+            for edge in edge_list:
+                self.add_edge(edge)
+                self.vertices.add(edge.source)
+                self.vertices.add(edge.target)
+
+    def add_edge(self, edge: Edge):
+        for e in self.edges:
+            if e.source == edge.source and e.target == edge.target:
+                raise ValueError('Cannot add {}. Edge alrady exists.'.format(edge))
+        self.edges.add(edge)
+        self.vertices.add(edge.source)
+        self.vertices.add(edge.target)
+
+    def get_edge(self, source, target):
+        for edge in self.edges:
+            if edge.source == source and edge.target == target:
+                return edge
+        raise KeyError('The requested edge does not exist!')
 
 class NetworkProblem(ABC):
     @abstractmethod

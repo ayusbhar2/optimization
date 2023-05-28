@@ -42,7 +42,6 @@ def get_shortest_paths(graph: Graph, source: str, target=None, algorithm='dijkst
 
         sorted_candidates = sorted(candidates, key=lambda x: x[1]) # sort by cost
 
-
         n = len(sorted_candidates)
         if n == 0:
             raise ValueError('No more edges to explore!')
