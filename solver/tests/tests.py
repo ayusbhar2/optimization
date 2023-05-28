@@ -9,7 +9,6 @@ from solver.algorithms import branch_and_bound, get_shortest_path, _extract_path
 from solver.classes import BinaryIntegerProblem, Edge, Graph
 from solver.utils import is_integer_solution
 
-
 class TestBinaryIntegerProblem(unittest.TestCase):
 
     def test_lp_relaxation(self):
@@ -229,4 +228,5 @@ class TestDijkstra(unittest.TestCase):
 
 if __name__ == '__main__':
 
+    logging.basicConfig(level=logging.ERROR)
     unittest.main()

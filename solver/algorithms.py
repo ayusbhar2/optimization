@@ -12,7 +12,7 @@ z_star = -np.inf
 var_index = 0
 tolerance = 1e-7
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.ERROR)
 
 def _extract_path(previous_nodes, target_node, path=''):
     path = target_node + path
