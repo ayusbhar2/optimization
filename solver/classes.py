@@ -37,9 +37,8 @@ class Graph():
                 self.vertices.add(edge.target)
 
     def add_edge(self, edge: Edge):
-        for e in self.edges:
-            if e.source == edge.source and e.target == edge.target:
-                raise ValueError('Cannot add {}. Edge alrady exists.'.format(edge))
+        if edge in self.edges:
+            raise ValueError('Cannot add {}. Edge alrady exists.'.format(edge))
         self.edges.add(edge)
         self.vertices.add(edge.source)
         self.vertices.add(edge.target)

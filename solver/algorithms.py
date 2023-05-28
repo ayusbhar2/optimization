@@ -31,12 +31,13 @@ def get_shortest_paths(graph: Graph, source: str, target=None, algorithm='dijkst
     dists = {source: 0} # maps each node to its shortest distance from source
     previous_nodes = {source: None} # node preceding the current node in shortest path
 
-    i = 1
     while len(dists) < len(graph.vertices):
         candidates = []
-        for edge, cost in graph.items():
-            if (edge[0] in dists and edge[1] not in dists): # edge crosses frontier
-                candidates.append((edge, dists[edge[0]] + cost))
+        for edge in graph.edges:
+            if (edge.source in dists and
+                edge.target not in dists): # edge crosses frontier
+                dist = dists[edge.source] + edge.cost
+                candidates.append((edge, dist))
             else:
                 continue
 
@@ -48,13 +49,15 @@ def get_shortest_paths(graph: Graph, source: str, target=None, algorithm='dijkst
         else:
             best_candidates = [sorted_candidates[0]]
             j = 0
-            while (j + 1 < n and sorted_candidates[j][1] == sorted_candidates[j + 1][1]):
+            while (j + 1 < n and
+                sorted_candidates[j][1] == sorted_candidates[j + 1][1]):
                 best_candidates.append(sorted_candidates[j + 1])
                 j += 1
+
         for edge, dist in best_candidates:
-            dists.update({edge[1]: dist})
-            previous_nodes.update({edge[1]: edge[0]})
-        i += 1
+            dists.update({edge.target: dist})
+            # TODO: improve tie breaking
+            previous_nodes.update({edge.target: edge.source})
 
     if target: # a target node was provided
         shortest_path = _extract_path(previous_nodes, target)

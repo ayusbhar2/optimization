@@ -113,6 +113,15 @@ class TestGraph(unittest.TestCase):
 
         self.assertEqual(graph.vertices, {0, 1, 2, 3})
 
+    def test_add_edge(self):
+        e1 = Edge(0, 1, cost=4)
+        edge_list = [e1]
+        graph = Graph(edge_list)
+
+        with self.assertRaises(ValueError):
+            graph.add_edge(e1)
+
+
 class TestDijkstra(unittest.TestCase):
 
     def test_extract_path(self):
@@ -179,31 +188,30 @@ class TestDijkstra(unittest.TestCase):
 
         # with target
         result = get_shortest_paths(graph, 'O', target='T', algorithm='dijkstra')
+        self.assertEqual(result[0], 13)
+        self.assertIn(result[1], ['OABDT', 'OABEDT']) # two optimal solutions
 
-#         self.assertEqual(result[0], 13)
-#         self.assertEqual(result[1], 'OABEDT')
+        result = get_shortest_paths(graph, 'O', target='C', algorithm='dijkstra')
+        self.assertEqual(result[0], 4)
+        self.assertEqual(result[1], 'OC')
 
-#         result = get_shortest_paths(graph, 'O', target='C', algorithm='dijkstra')
-#         self.assertEqual(result[0], 4)
-#         self.assertEqual(result[1], 'OC')
+        # without target
+        result = get_shortest_paths(graph, 'O', target=None, algorithm='dijkstra')
+        self.assertEqual(result[0]['O'], 0)
+        self.assertEqual(result[0]['A'], 2)
+        self.assertEqual(result[0]['B'], 4)
+        self.assertEqual(result[0]['C'], 4)
+        self.assertEqual(result[0]['D'], 8)
+        self.assertEqual(result[0]['E'], 7)
+        self.assertEqual(result[0]['T'], 13)
 
-#         # without target
-#         result = get_shortest_paths(graph, 'O', target=None, algorithm='dijkstra')
-#         self.assertEqual(result[0]['O'], 0)
-#         self.assertEqual(result[0]['A'], 2)
-#         self.assertEqual(result[0]['B'], 4)
-#         self.assertEqual(result[0]['C'], 4)
-#         self.assertEqual(result[0]['D'], 8)
-#         self.assertEqual(result[0]['E'], 7)
-#         self.assertEqual(result[0]['T'], 13)
-
-#         self.assertEqual(result[1]['O'], None)
-#         self.assertEqual(result[1]['A'], 'O')
-#         self.assertEqual(result[1]['B'], 'A')
-#         self.assertEqual(result[1]['C'], 'O')
-#         self.assertEqual(result[1]['D'], 'E')
-#         self.assertEqual(result[1]['E'], 'B')
-#         self.assertEqual(result[1]['T'], 'D')
+        self.assertEqual(result[1]['O'], None)
+        self.assertEqual(result[1]['A'], 'O')
+        self.assertEqual(result[1]['B'], 'A')
+        self.assertEqual(result[1]['C'], 'O')
+        self.assertIn(result[1]['D'], ['E', 'B']) # two optimal solutions
+        self.assertEqual(result[1]['E'], 'B')
+        self.assertEqual(result[1]['T'], 'D')
         
 
 if __name__ == '__main__':
