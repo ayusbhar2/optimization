@@ -14,8 +14,8 @@ tolerance = 1e-7
 
 logging.basicConfig(level=logging.ERROR)
 
-def _extract_path(previous_nodes, target_node, path=''):
-    path = target_node + path
+def _extract_path(previous_nodes, target_node, path=[]):
+    path = [target_node] + path
     if not previous_nodes[target_node]:
         return path
     else:

@@ -147,19 +147,19 @@ class TestDijkstra(unittest.TestCase):
             'T': 'D',
         }
         result = _extract_path(previous_nodes, 'O')
-        self.assertEqual(result, 'O')
+        self.assertEqual(result, ['O'])
         result = _extract_path(previous_nodes, 'A')
-        self.assertEqual(result, 'OA')
+        self.assertEqual(result, ['O', 'A'])
         result = _extract_path(previous_nodes, 'B')
-        self.assertEqual(result, 'OAB')
+        self.assertEqual(result, ['O', 'A', 'B'])
         result = _extract_path(previous_nodes, 'C')
-        self.assertEqual(result, 'OC')
+        self.assertEqual(result, ['O', 'C'])
         result = _extract_path(previous_nodes, 'D')
-        self.assertEqual(result, 'OABD')
+        self.assertEqual(result, ['O', 'A', 'B', 'D'])
         result = _extract_path(previous_nodes, 'E')
-        self.assertEqual(result, 'OABE')
+        self.assertEqual(result, ['O', 'A', 'B', 'E'])
         result = _extract_path(previous_nodes, 'T')
-        self.assertEqual(result, 'OABDT')
+        self.assertEqual(result, ['O', 'A', 'B', 'D', 'T'])
 
     def test_get_shortest_path_with_target(self):
         # Seervada Park network
@@ -201,11 +201,14 @@ class TestDijkstra(unittest.TestCase):
         # with target
         result = get_shortest_path(graph, 'O', target='T', algorithm='dijkstra')
         self.assertEqual(result[0], 13)
-        self.assertIn(result[1], ['OABDT', 'OABEDT']) # two optimal solutions
+        self.assertIn(result[1],
+            [['O', 'A', 'B', 'D', 'T'],
+            ['O', 'A', 'B', 'E', 'D', 'T']]
+        ) # two optimal solutions
 
         result = get_shortest_path(graph, 'O', target='C', algorithm='dijkstra')
         self.assertEqual(result[0], 4)
-        self.assertEqual(result[1], 'OC')
+        self.assertEqual(result[1], ['O', 'C'])
 
         # without target
         result = get_shortest_path(graph, 'O', target=None, algorithm='dijkstra')
