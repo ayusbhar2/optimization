@@ -1,13 +1,13 @@
-import cvxopt as cv
 import cvxpy as cp
-import numpy as np
 
 import logging
 import unittest
 
-from solver.algorithms import branch_and_bound, get_shortest_path, _extract_path
+from solver.algorithms import branch_and_bound, get_shortest_path
+from solver.algorithms import _extract_path
 from solver.classes import BinaryIntegerProblem, Edge, Graph
 from solver.utils import is_integer_solution
+
 
 class TestBinaryIntegerProblem(unittest.TestCase):
 
@@ -47,7 +47,8 @@ class TestBinaryIntegerProblem(unittest.TestCase):
         constraints = [x1 <= 1]
 
         with self.assertRaises(ValueError):
-            bip = BinaryIntegerProblem(obj, constraints)
+            BinaryIntegerProblem(obj, constraints)
+
 
 class TestBranchAndBound(unittest.TestCase):
 
@@ -75,11 +76,13 @@ class TestBranchAndBound(unittest.TestCase):
         self.assertEqual(result.get('optimal_solution')[2], 0)
         self.assertEqual(result.get('optimal_solution')[3], 0)
 
+
 class TestUtils(unittest.TestCase):
 
     def test_is_integer_solution(self):
         self.assertTrue(is_integer_solution([1e-7], 1e-7))
         self.assertFalse(is_integer_solution([1.5], 1e-7))
+
 
 class TestEdge(unittest.TestCase):
 
@@ -94,6 +97,7 @@ class TestEdge(unittest.TestCase):
         e1.update(dist=4)
         self.assertEqual(e1.dist, 4)
 
+
 class TestGraph(unittest.TestCase):
 
     def test_init_(self):
@@ -104,7 +108,7 @@ class TestGraph(unittest.TestCase):
             Edge(1, 2, **{'cost': 4}),
             Edge(1, 3, **{'cost': 5}),
             Edge(2, 0, **{'cost': 6}),
-            Edge(3, 2, **{'cost': 7}),]
+            Edge(3, 2, **{'cost': 7}), ]
 
         graph = Graph(edge_list)
 
@@ -199,19 +203,20 @@ class TestDijkstra(unittest.TestCase):
         graph = Graph(edge_list)
 
         # with target
-        result = get_shortest_path(graph, 'O', target='T', algorithm='dijkstra')
+        result = get_shortest_path(graph, 'O', target='T',
+                                   algorithm='dijkstra')
         self.assertEqual(result[0], 13)
-        self.assertIn(result[1],
-            [['O', 'A', 'B', 'D', 'T'],
-            ['O', 'A', 'B', 'E', 'D', 'T']]
-        ) # two optimal solutions
+        self.assertIn(result[1], [['O', 'A', 'B', 'D', 'T'],
+                      ['O', 'A', 'B', 'E', 'D', 'T']])  # two optimal solutions
 
-        result = get_shortest_path(graph, 'O', target='C', algorithm='dijkstra')
+        result = get_shortest_path(graph, 'O', target='C',
+                                   algorithm='dijkstra')
         self.assertEqual(result[0], 4)
         self.assertEqual(result[1], ['O', 'C'])
 
         # without target
-        result = get_shortest_path(graph, 'O', target=None, algorithm='dijkstra')
+        result = get_shortest_path(graph, 'O', target=None,
+                                   algorithm='dijkstra')
         self.assertEqual(result[0]['O'], 0)
         self.assertEqual(result[0]['A'], 2)
         self.assertEqual(result[0]['B'], 4)
@@ -224,7 +229,7 @@ class TestDijkstra(unittest.TestCase):
         self.assertEqual(result[1]['A'], 'O')
         self.assertEqual(result[1]['B'], 'A')
         self.assertEqual(result[1]['C'], 'O')
-        self.assertIn(result[1]['D'], ['E', 'B']) # two optimal solutions
+        self.assertIn(result[1]['D'], ['E', 'B'])  # two optimal solutions
         self.assertEqual(result[1]['E'], 'B')
         self.assertEqual(result[1]['T'], 'D')
         

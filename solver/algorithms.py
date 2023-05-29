@@ -1,5 +1,3 @@
-import cvxopt as cv
-import cvxpy as cp
 import numpy as np
 
 import logging
@@ -14,6 +12,7 @@ tolerance = 1e-7
 
 logging.basicConfig(level=logging.ERROR)
 
+
 def _extract_path(previous_nodes, target_node, path=[]):
     path = [target_node] + path
     if not previous_nodes[target_node]:
@@ -22,16 +21,20 @@ def _extract_path(previous_nodes, target_node, path=[]):
         u = previous_nodes[target_node]
         return _extract_path(previous_nodes, u, path=path)
 
+
 def simplex_2D(objective, constraints):
     pass
 
-def get_shortest_path(graph: Graph, source: str, target: None, algorithm='dijkstra'):
-    """Get shortest path from source to target in a connected, undirected graph."""
+
+def get_shortest_path(graph: Graph, source: str, target: None,
+                      algorithm='dijkstra'):
+    """Get shortest path from source to target in connected, undirected graph.
+    """
     logging.info(
         'Starting the shortest path algorithm with source: {}'.format(source))
     try:
-        dists = {source: 0} # maps each node to its shortest distance from source
-        previous_nodes = {source: None} # node preceding the current node in shortest path
+        dists = {source: 0}  # maps node to its shortest distance from source
+        previous_nodes = {source: None}  # stores preceding node for each node
 
         i = 1
         while len(dists) < len(graph.vertices):
@@ -40,13 +43,14 @@ def get_shortest_path(graph: Graph, source: str, target: None, algorithm='dijkst
             candidates = []
             for edge in graph.edges:
                 if (edge.source in dists and
-                    edge.target not in dists): # edge crosses frontier
+                        edge.target not in dists):  # edge crosses frontier
                     dist = dists[edge.source] + edge.cost
                     candidates.append((edge, dist))
                 else:
                     continue
 
-            sorted_candidates = sorted(candidates, key=lambda x: x[1]) # sort by cost
+            sorted_candidates = sorted(
+                candidates, key=lambda x: x[1])  # sort by cost
             logging.debug('Candidate edges: {}'.format(sorted_candidates))
 
             n = len(sorted_candidates)
@@ -54,7 +58,7 @@ def get_shortest_path(graph: Graph, source: str, target: None, algorithm='dijkst
                 best_candidates = [sorted_candidates[0]]
                 j = 0
                 while (j + 1 < n and
-                    sorted_candidates[j][1] == sorted_candidates[j + 1][1]):
+                        sorted_candidates[j][1] == sorted_candidates[j + 1][1]):
                     best_candidates.append(sorted_candidates[j + 1])
                     j += 1
             else:
@@ -73,7 +77,7 @@ def get_shortest_path(graph: Graph, source: str, target: None, algorithm='dijkst
 
             i += 1
 
-        if target: # a target node was provided
+        if target:  # a target node was provided
             shortest_path = _extract_path(previous_nodes, target)
             shortest_distance = dists[target]
             return shortest_distance, shortest_path
@@ -84,11 +88,14 @@ def get_shortest_path(graph: Graph, source: str, target: None, algorithm='dijkst
     except ValueError as e:
         logging.error(e)
 
+
 def transportation_simplex(prob: TransportationProblem):
     pass
 
+
 def hungarian_method(prob: AssignmentProblem):
     pass
+
 
 # TODO: write mixed integer version of algo.
 def branch_and_bound(bip: BinaryIntegerProblem, var_index=0):
@@ -98,27 +105,31 @@ def branch_and_bound(bip: BinaryIntegerProblem, var_index=0):
     lp_value = lp_result.get('optimal_value')
     lp_solution = lp_result.get('optimal_solution')
 
-    result = {'status': None, 'optimal_value': None, 'optimal_solution': None,}
+    result = {'status': None,
+              'optimal_value': None,
+              'optimal_solution': None, }
 
     global z_star
 
-    if (lp_status != 'optimal' or lp_value <= z_star): # fathom: lp infeasible or suboptimal
+    if (lp_status != 'optimal' or
+            lp_value <= z_star):  # fathom: lp infeasible or suboptimal
         result.update(
             {'status': lp_status,
-             'optimal_value': -np.inf,})
+             'optimal_value': -np.inf, })
 
-    elif is_integer_solution(lp_solution, epsilon=tolerance): # fathom: integer solution found
+    elif is_integer_solution(
+            lp_solution, epsilon=tolerance):  # fathom: integer solution found
         z_star = max(z_star, lp_value)
         result.update(
             {'status': lp_status,
              'optimal_value': lp_value,
-             'optimal_solution': [int(x) for x in lp_solution],})
+             'optimal_solution': [int(x) for x in lp_solution], })
 
-    elif var_index >= len(bip.variables()): # fathom: reached a leaf node
+    elif var_index >= len(bip.variables()):  # fathom: reached a leaf node
         result.update(
             {'status': 'optimal',
              'optimal_value': bip.objective.value,
-             'optimal_solution': [int(v.value[0]) for v in bip.variables()],})
+             'optimal_solution': [int(v.value[0]) for v in bip.variables()], })
     else:
         # Branch
         # cvxpy does not guarantee sorting of variables
@@ -145,4 +156,3 @@ def branch_and_bound(bip: BinaryIntegerProblem, var_index=0):
             result.update(result2)
 
     return result
-

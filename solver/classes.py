@@ -1,8 +1,7 @@
-import cvxopt as cv
 import cvxpy as cp
-import numpy as np
 
 from abc import ABC, abstractmethod
+
 
 class Edge():
     def __init__(self, source, target, **kwargs):
@@ -28,6 +27,7 @@ class Edge():
 
     def update(self, **kwargs):
         self.__dict__.update(kwargs)
+
 
 class Graph():
     def __init__(self, edge_list=[]):
@@ -59,22 +59,27 @@ class Graph():
                 return
         raise KeyError('The requested edge does not exist!')
 
+
 class NetworkProblem(ABC):
     @abstractmethod
     def solve(self):
         pass
 
+
 class TransportationProblem(NetworkProblem):
     def solve():
         pass
+
 
 class AssignmentProblem(NetworkProblem):
     def solve():
         pass
 
+
 class MaxFlowProblem(NetworkProblem):
     def solve():
         pass
+
 
 class IntegerProblem(cp.problems.problem.Problem):
 
@@ -83,11 +88,13 @@ class IntegerProblem(cp.problems.problem.Problem):
         cp.problems.problem.Problem.__init__(
             self, objective, constraints)
 
+
 class MixedIntegerProblem(IntegerProblem):
 
     def __init__(self, objective, constraints):
         IntegerProblem.__init__(
             self, objective, constraints)
+
 
 class BinaryIntegerProblem(IntegerProblem):
 
@@ -104,7 +111,9 @@ class BinaryIntegerProblem(IntegerProblem):
     def solve_lp_relaxation(self):
         boolean_vars = []
         new_constraints = []
-        result = {'status': None, 'optimal_value': None, 'optimal_solution': None}
+        result = {'status': None,
+                  'optimal_value': None,
+                  'optimal_solution': None}
 
         for var in self.variables():
             if var.attributes['boolean']:
