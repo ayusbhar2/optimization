@@ -137,6 +137,19 @@ class TestGraph(unittest.TestCase):
         graph.update_edge(0, 1, alpha='boom')
         self.assertEqual(graph.get_edge(0, 1).alpha, 'boom')
 
+    def test_get_edges(self):
+        e1 = Edge(0, 1, cost=4)
+        e2 = Edge(0, 2, cost=5)
+        edge_list = [e1, e2]
+        graph = Graph(edge_list)
+
+        result = graph.get_edges(source=0)
+        self.assertIn(e1, result)
+        self.assertIn(e2, result)
+
+        result = graph.get_edges(target=1)
+        self.assertEqual(result[0], e1)
+
 
 class TestDijkstra(unittest.TestCase):
 

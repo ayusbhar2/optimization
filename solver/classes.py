@@ -52,6 +52,23 @@ class Graph():
                 return edge
         raise KeyError('The requested edge does not exist!')
 
+    def get_edges(self, source=None, target=None):
+        result = []
+        if not source and not target:
+            return self.edges
+        if source and not target:
+            for edge in self.edges:
+                if edge.source == source:
+                    result.append(edge)
+            return result
+        if target and not source:
+            for edge in self.edges:
+                if edge.target == target:
+                    result.append(edge)
+            return result
+        result.append(self.get_edge(source, target))
+        return result
+
     def update_edge(self, source, target, **kwargs):
         for edge in self.edges:
             if edge.source == source and edge.target == target:
