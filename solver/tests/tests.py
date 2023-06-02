@@ -97,6 +97,11 @@ class TestEdge(unittest.TestCase):
         e1.update(dist=4)
         self.assertEqual(e1.dist, 4)
 
+    def test_delete(self):
+        e1 = Edge(1, 2, cost=1)
+        e1.delete_attr('cost')
+        self.assertFalse('cost' in e1.__dict__)
+
 
 class TestGraph(unittest.TestCase):
 

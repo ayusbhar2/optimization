@@ -28,6 +28,9 @@ class Edge():
     def update(self, **kwargs):
         self.__dict__.update(kwargs)
 
+    def delete_attr(self, name: str):
+        self.__dict__.pop(name)
+
 
 class Graph():
     def __init__(self, edge_list=[]):
