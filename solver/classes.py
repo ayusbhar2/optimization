@@ -3,24 +3,57 @@ import cvxpy as cp
 from abc import ABC, abstractmethod
 
 
+class Vertex():
+    def __init__(self, name: str, **kwargs):
+        self.name = name
+        for k, v in kwargs.items():
+            self.__dict__[k] = v
+
+    def __eq__(self, other):
+        if self.name == other.name:
+            return True
+        else:
+            return False
+
+    def __str__(self):
+        return 'Vertex: {}'.format(self.name)
+
+    def __repr__(self):
+        return 'Vertex: {}'.format(self.name) 
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def add_attr(self, **kwargs):
+        for k, v in kwargs.items():
+            self.__dict__[k] = v
+
+
 class Edge():
     def __init__(self, source, target, **kwargs):
+        if not isinstance(source, Vertex):
+            source = Vertex(name=source)
+
+        if not isinstance(target, Vertex):
+            target = Vertex(name=target)
+
         self.source = source
         self.target = target
         for k, v in kwargs.items():
             self.__dict__[k] = v
 
     def __eq__(self, other):
-        if (self.source == other.source and self.target == other.target):
+        if (self.source == other.source and
+                self.target == other.target):
             return True
         else:
             return False
 
     def __str__(self):
-        return 'Edge: {}->{}'.format(self.source, self.target)
+        return 'Edge: {}->{}'.format(self.source.name, self.target.name)
 
     def __repr__(self):
-        return 'Edge: {}->{}'.format(self.source, self.target)
+        return 'Edge: {}->{}'.format(self.source.name, self.target.name)
 
     def __hash__(self):
         return hash(repr(self))
@@ -39,8 +72,6 @@ class Graph():
         if edge_list:
             for edge in edge_list:
                 self.add_edge(edge)
-                self.vertices.add(edge.source)
-                self.vertices.add(edge.target)
 
     def add_edge(self, edge: Edge):
         if edge in self.edges:
@@ -51,7 +82,7 @@ class Graph():
 
     def get_edge(self, source, target):
         for edge in self.edges:
-            if edge.source == source and edge.target == target:
+            if edge.source.name == source and edge.target.name == target:
                 return edge
         raise KeyError('The requested edge does not exist!')
 
@@ -61,12 +92,12 @@ class Graph():
             return self.edges
         if source and not target:
             for edge in self.edges:
-                if edge.source == source:
+                if edge.source.name == source:
                     result.append(edge)
             return result
         if target and not source:
             for edge in self.edges:
-                if edge.target == target:
+                if edge.target.name == target:
                     result.append(edge)
             return result
         result.append(self.get_edge(source, target))
@@ -74,7 +105,7 @@ class Graph():
 
     def update_edge(self, source, target, **kwargs):
         for edge in self.edges:
-            if edge.source == source and edge.target == target:
+            if edge.source.name == source and edge.target.name == target:
                 edge.update(**kwargs)
                 return
         raise KeyError('The requested edge does not exist!')

@@ -26,15 +26,16 @@ def simplex_2D(objective, constraints):
     pass
 
 
-def get_shortest_path(graph: Graph, source: str, target: None,
+def get_shortest_path(graph: Graph, source_name: str, target_name='',
                       algorithm='dijkstra'):
     """Get shortest path from source to target in connected, undirected graph.
     """
     logging.info(
-        'Starting the shortest path algorithm with source: {}'.format(source))
+        'Starting the shortest path algorithm with source: {}'.format(
+            source_name))
     try:
-        dists = {source: 0}  # maps node to its shortest distance from source
-        previous_nodes = {source: None}  # stores preceding node for each node
+        dists = {source_name: 0}  # holds shortest distances from source node
+        previous_nodes = {source_name: None}  # stores preceding node
 
         i = 1
         while len(dists) < len(graph.vertices):
@@ -42,9 +43,9 @@ def get_shortest_path(graph: Graph, source: str, target: None,
 
             candidates = []
             for edge in graph.edges:
-                if (edge.source in dists and
-                        edge.target not in dists):  # edge crosses frontier
-                    dist = dists[edge.source] + edge.cost
+                if (edge.source.name in dists and
+                        edge.target.name not in dists):  # edge crosses frontier
+                    dist = dists[edge.source.name] + edge.cost
                     candidates.append((edge, dist))
                 else:
                     continue
@@ -66,20 +67,20 @@ def get_shortest_path(graph: Graph, source: str, target: None,
                 break
 
             for edge, dist in best_candidates:
-                dists.update({edge.target: dist})
+                dists.update({edge.target.name: dist})
                 # TODO: improve tie breaking
-                previous_nodes.update({edge.target: edge.source})
+                previous_nodes.update({edge.target.name: edge.source.name})
                 logging.info('Edge selected: {}-->{} ({})'.format(
-                    edge.source, edge.target, dist))
+                    edge.source.name, edge.target.name, dist))
 
             logging.debug('len(dists): {}, len(graph.vertices): {}'.format(
                 len(dists), len(graph.vertices)))
 
             i += 1
 
-        if target:  # a target node was provided
-            shortest_path = _extract_path(previous_nodes, target)
-            shortest_distance = dists[target]
+        if target_name:  # a target node was provided
+            shortest_path = _extract_path(previous_nodes, target_name)
+            shortest_distance = dists[target_name]
             return shortest_distance, shortest_path
 
         else:
