@@ -80,32 +80,34 @@ class Graph():
         self.vertices.add(edge.source)
         self.vertices.add(edge.target)
 
-    def get_edge(self, source, target):
+    def get_edge(self, source_name, target_name):
         for edge in self.edges:
-            if edge.source.name == source and edge.target.name == target:
+            if (edge.source.name == source_name and
+                    edge.target.name == target_name):
                 return edge
         raise KeyError('The requested edge does not exist!')
 
-    def get_edges(self, source=None, target=None):
+    def get_edges(self, source_name=None, target_name=None):
         result = []
-        if not source and not target:
+        if not source_name and not target_name:
             return self.edges
-        if source and not target:
+        if source_name and not target_name:
             for edge in self.edges:
-                if edge.source.name == source:
+                if edge.source.name == source_name:
                     result.append(edge)
             return result
-        if target and not source:
+        if target_name and not source_name:
             for edge in self.edges:
-                if edge.target.name == target:
+                if edge.target.name == target_name:
                     result.append(edge)
             return result
-        result.append(self.get_edge(source, target))
+        result.append(self.get_edge(source_name, target_name))
         return result
 
-    def update_edge(self, source, target, **kwargs):
+    def update_edge(self, source_name, target_name, **kwargs):
         for edge in self.edges:
-            if edge.source.name == source and edge.target.name == target:
+            if (edge.source.name == source_name and
+                    edge.target.name == target_name):
                 edge.update(**kwargs)
                 return
         raise KeyError('The requested edge does not exist!')
