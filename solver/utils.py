@@ -35,3 +35,10 @@ def check_violation(constraints: list):
         if not c.value():
             return c
     return None
+
+
+def get_variable(prob: cp.problems.problem.Problem, name: str):
+    for v in prob.variables():
+        if v.name() == name:
+            return v
+    return None

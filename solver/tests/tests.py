@@ -6,7 +6,7 @@ import unittest
 from solver.algorithms import branch_and_bound, get_shortest_path
 from solver.algorithms import _extract_path
 from solver.classes import BinaryIntegerProblem, Edge, Graph, Vertex
-from solver.utils import is_integer_solution
+from solver.utils import is_integer_solution, get_variable
 
 
 class TestBinaryIntegerProblem(unittest.TestCase):
@@ -75,13 +75,6 @@ class TestBranchAndBound(unittest.TestCase):
         self.assertEqual(result.get('optimal_solution')[1], 1)
         self.assertEqual(result.get('optimal_solution')[2], 0)
         self.assertEqual(result.get('optimal_solution')[3], 0)
-
-
-class TestUtils(unittest.TestCase):
-
-    def test_is_integer_solution(self):
-        self.assertTrue(is_integer_solution([1e-7], 1e-7))
-        self.assertFalse(is_integer_solution([1.5], 1e-7))
 
 
 class TestVertex(unittest.TestCase):
@@ -277,6 +270,26 @@ class TestDijkstra(unittest.TestCase):
         self.assertIn(result[1]['D'], ['E', 'B'])  # two optimal solutions
         self.assertEqual(result[1]['E'], 'B')
         self.assertEqual(result[1]['T'], 'D')
+
+
+class TestUtils(unittest.TestCase):
+
+    def test_is_integer_solution(self):
+        self.assertTrue(is_integer_solution([1e-7], 1e-7))
+        self.assertFalse(is_integer_solution([1.5], 1e-7))
+
+    def test_get_variable(self):
+        x1 = cp.Variable(1, name='x1')
+        x2 = cp.Variable(1, name='x2')
+
+        obj = cp.Minimize(x1 + x2)
+        constr = [x1 + x2 <= 1, x1 >= 0, x2 >= 0]
+        prob = cp.Problem(obj, constr)
+
+        v1 = get_variable(prob, 'x1')
+
+        self.assertEqual(v1.name(), 'x1')
+        self.assertEqual(v1.id, x1.id)
         
 
 if __name__ == '__main__':
