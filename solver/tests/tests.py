@@ -4,7 +4,7 @@ import logging
 import unittest
 
 from solver.algorithms import branch_and_bound, get_shortest_path
-from solver.algorithms import _extract_path
+from solver.algorithms import _extract_path, get_minimum_spanning_tree
 from solver.classes import BinaryIntegerProblem, Edge, Graph, Vertex
 from solver.utils import is_integer_solution, get_variable
 
@@ -290,7 +290,68 @@ class TestUtils(unittest.TestCase):
 
         self.assertEqual(v1.name(), 'x1')
         self.assertEqual(v1.id, x1.id)
-        
+
+
+class TestMinimumSpanningTree(unittest.TestCase):
+    def test_minimum_spanning_tree(self):
+        edge_list = [
+            Edge('O', 'A', length=2),
+            Edge('O', 'B', length=5),
+            Edge('O', 'C', length=4),
+            Edge('A', 'O', length=2),
+            Edge('A', 'B', length=2),
+            Edge('A', 'D', length=7),
+            Edge('B', 'O', length=5),
+            Edge('B', 'A', length=2),
+            Edge('B', 'C', length=1),
+            Edge('B', 'D', length=4),
+            Edge('B', 'E', length=3),
+            Edge('C', 'O', length=4),
+            Edge('C', 'B', length=1),
+            Edge('C', 'E', length=4),
+            Edge('D', 'A', length=7),
+            Edge('D', 'B', length=4),
+            Edge('D', 'E', length=1),
+            Edge('D', 'T', length=5),
+            Edge('E', 'B', length=3),
+            Edge('E', 'C', length=4),
+            Edge('E', 'D', length=1),
+            Edge('E', 'T', length=7),
+            Edge('T', 'D', length=5),
+            Edge('T', 'E', length=7),
+        ]
+
+        graph = Graph(edge_list)
+        tree = get_minimum_spanning_tree(graph)
+        self.assertEqual(len(tree.edges), 6)
+
+        self.assertTrue(
+            graph.get_edge('O', 'A') in tree.edges or
+            graph.get_edge('A', 'O') in tree.edges
+        )
+        self.assertTrue(
+            graph.get_edge('B', 'A') in tree.edges or
+            graph.get_edge('A', 'B') in tree.edges
+        )
+        self.assertTrue(
+            graph.get_edge('B', 'C') in tree.edges or
+            graph.get_edge('C', 'B') in tree.edges
+        )
+        self.assertTrue(
+            graph.get_edge('B', 'E') in tree.edges or
+            graph.get_edge('E', 'B') in tree.edges
+        )
+        self.assertTrue(
+            graph.get_edge('D', 'E') in tree.edges or
+            graph.get_edge('E', 'D') in tree.edges
+        )
+        self.assertTrue(
+            graph.get_edge('D', 'T') in tree.edges or
+            graph.get_edge('T', 'D') in tree.edges
+        )
+        self.assertIsNone(
+            get_minimum_spanning_tree(Graph()))
+
 
 if __name__ == '__main__':
 

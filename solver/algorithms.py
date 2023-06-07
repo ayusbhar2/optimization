@@ -27,7 +27,7 @@ def simplex_2D(objective, constraints):
 
 
 def get_shortest_path(graph: Graph, source_name: str, target_name='',
-                      algorithm='dijkstra'):
+                      algorithm='dijkstra') -> tuple:
     """Get shortest path from source to target in connected, undirected graph.
     """
     logging.info(
@@ -44,7 +44,7 @@ def get_shortest_path(graph: Graph, source_name: str, target_name='',
             candidates = []
             for edge in graph.edges:
                 if (edge.source.name in dists and
-                        edge.target.name not in dists):  # edge crosses frontier
+                        edge.target.name not in dists):  # crosses frontier
                     dist = dists[edge.source.name] + edge.cost
                     candidates.append((edge, dist))
                 else:
@@ -99,7 +99,7 @@ def hungarian_method(prob: AssignmentProblem):
 
 
 # TODO: write mixed integer version of algo.
-def branch_and_bound(bip: BinaryIntegerProblem, var_index=0):
+def branch_and_bound(bip: BinaryIntegerProblem, var_index=0) -> dict:
     # Bound
     lp_result = bip.solve_lp_relaxation()
     lp_status = lp_result.get('status')
@@ -157,3 +157,36 @@ def branch_and_bound(bip: BinaryIntegerProblem, var_index=0):
             result.update(result2)
 
     return result
+
+
+def get_minimum_spanning_tree(graph: Graph, key_attr='length') -> Graph:
+    if not graph.edges:
+        return None
+
+    explored = set()
+    source = list(graph.vertices)[0]  # pick arbitrary source node
+    explored.add(source)
+
+    tree = Graph()
+    while graph.vertices - explored:
+    
+        candidates = []
+        for edge in graph.edges:
+            if (edge.source in explored and
+                    edge.target not in explored):  # crosses frontier
+                candidates.append(edge)
+        logging.info('Candidates edges: {}'.format(candidates))
+
+        best_edge = min(candidates, key=lambda x: getattr(x, key_attr))
+        logging.info('Best edge: {}'.format(best_edge))
+
+        best_attr = getattr(best_edge, key_attr)
+        logging.info('Best length: {}'.format(best_attr))
+
+        logging.info('Adding {} to tree'.format(best_edge))
+        tree.add_edge(best_edge)
+
+        logging.info('Marking {} as explored'.format(best_edge.target))
+        explored.add(best_edge.target)
+
+    return tree
